@@ -10,6 +10,7 @@ public class TimetablePreferences {
         this.preferredTime = preferredTime;
         this.preferredDay = preferredDay;
     }
+
     public String getPreferredCampus() { return preferredCampus; }
     public void setPreferredCampus(String preferredCampus) { this.preferredCampus = preferredCampus; }
 

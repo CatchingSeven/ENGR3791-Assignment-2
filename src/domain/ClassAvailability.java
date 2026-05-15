@@ -12,6 +12,7 @@ public class ClassAvailability {
         this.semester = semester;
         this.availabilityNo = availabilityNo;
     }
+
     public String getAttendanceMode() { return attendanceMode; }
     public void setAttendanceMode(String attendanceMode) { this.attendanceMode = attendanceMode; }
 

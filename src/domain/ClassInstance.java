@@ -1,23 +1,22 @@
 package domain;
 
-/**
- * Represents a specific instance of a class (e.g., a specific weekly workshop).
- */
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class ClassInstance {
     private int classInstanceNo;
-    private String classCode;
-    private String startDate; // Type pending team decision
-    private String endDate;   // Type pending team decision
-    private String startTime; // Type pending team decision
-    private String endTime;   // Type pending team decision
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String day;
     private String building;
     private String room;
 
-    public ClassInstance(int classInstanceNo, String classCode, String startDate, String endDate,
-                         String startTime, String endTime, String day, String building, String room) {
+    public ClassInstance(int classInstanceNo, LocalDate startDate, LocalDate endDate,
+                         LocalTime startTime, LocalTime endTime, String day,
+                         String building, String room) {
         this.classInstanceNo = classInstanceNo;
-        this.classCode = classCode;
         this.startDate = startDate;
         this.endDate = endDate;
         this.startTime = startTime;
@@ -30,20 +29,17 @@ public class ClassInstance {
     public int getClassInstanceNo() { return classInstanceNo; }
     public void setClassInstanceNo(int classInstanceNo) { this.classInstanceNo = classInstanceNo; }
 
-    public String getClassCode() { return classCode; }
-    public void setClassCode(String classCode) { this.classCode = classCode; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public String getStartDate() { return startDate; }
-    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public String getEndDate() { return endDate; }
-    public void setEndDate(String endDate) { this.endDate = endDate; }
+    public LocalTime getStartTime() { return startTime; }
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
 
-    public String getStartTime() { return startTime; }
-    public void setStartTime(String startTime) { this.startTime = startTime; }
-
-    public String getEndTime() { return endTime; }
-    public void setEndTime(String endTime) { this.endTime = endTime; }
+    public LocalTime getEndTime() { return endTime; }
+    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
 
     public String getDay() { return day; }
     public void setDay(String day) { this.day = day; }
