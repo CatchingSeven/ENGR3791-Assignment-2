@@ -1,17 +1,20 @@
-import java.util.ArrayList;
+package domain;
 
+/**
+ * Represents a Topic (Subject) as defined in the domain model.
+ */
 public class Topic {
     private String topicCode;
     private String topicName;
-    private ArrayList<TopicClass> topicClasses;
 
     public Topic(String topicCode, String topicName) {
         this.topicCode = topicCode;
         this.topicName = topicName;
-        this.topicClasses = new ArrayList<>();
     }
 
     public String getTopicCode() { return topicCode; }
+    public void setTopicCode(String topicCode) { this.topicCode = topicCode; }
+
     public String getTopicName() { return topicName; }
-    public ArrayList<TopicClass> getTopicClasses() { return topicClasses; }
+    public void setTopicName(String topicName) { this.topicName = topicName; }
 }

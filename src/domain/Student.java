@@ -1,23 +1,21 @@
-import java.util.ArrayList;
+package domain;
 
 public class Student {
     private String studentID;
     private String studentName;
     private String course;
-    private ArrayList<Topic> enrolledTopics;
-    private ArrayList<Timetable> timetables;
 
     public Student(String studentID, String studentName, String course) {
         this.studentID = studentID;
         this.studentName = studentName;
         this.course = course;
-        this.enrolledTopics = new ArrayList<>();
-        this.timetables = new ArrayList<>();
     }
-
     public String getStudentID() { return studentID; }
+    public void setStudentID(String studentID) { this.studentID = studentID; }
+
     public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+
     public String getCourse() { return course; }
-    public ArrayList<Topic> getEnrolledTopics() { return enrolledTopics; }
-    public ArrayList<Timetable> getTimetables() { return timetables; }
+    public void setCourse(String course) { this.course = course; }
 }
