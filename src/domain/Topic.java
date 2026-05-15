@@ -1,8 +1,6 @@
 package domain;
 
-/**
- * Represents a Topic (Subject) as defined in the domain model.
- */
+
 public class Topic {
     private String topicCode;
     private String topicName;

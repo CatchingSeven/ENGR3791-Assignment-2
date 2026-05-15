@@ -3,10 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents the 'Class' entity from the Domain Model Class Diagram.
- * Named 'CourseClass' to avoid compilation conflicts with the native Java 'Class' keyword.
- */
+
 public class CourseClass {
     private String classFormat;
     private String classCode;
