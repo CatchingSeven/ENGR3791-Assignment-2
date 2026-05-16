@@ -1,155 +1,429 @@
 package persistence;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+
 import domain.*;
 
-/**
- * PersistenceAdapter handles all file I/O operations for the application.
- * It encapsulates CSV reading/writing, timetable repository functions,
- * and settings storage.
- */
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.util.*;
+
+/** Layer 4 component: PersistenceAdapter. Handles CSVReader, CSVWriter, SettingsStore and TimetableRepository. */
 public class PersistenceAdapter {
+    private static final Path DATA_DIR = Paths.get("data");
+    private static final Path CLASS_REPOSITORY = DATA_DIR.resolve("classes.csv");
+    private static final Path SETTINGS_FILE = DATA_DIR.resolve("settings.csv");
 
-    // Enforces strict 24-hour time format for reading and writing data
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd MMM yyyy"); // Adjusted for full dates
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter TIME_24 = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("dd MMM uuuu", Locale.ENGLISH);
 
-    private static final String SETTINGS_FILE = "settings.csv";
-    private static final String DELIMITER = ",";
+    private static final List<String> HANDBOOK_HEADERS = Arrays.asList(
+            "Topic", "Availability", "Class", "Class instance", "Date", "Day", "Time", "Location"
+    );
 
-    // ==========================================
-    // CSV Reader & Writer (Class Data)
-    // ==========================================
-
-    /**
-     * Writes a list of ClassInstances to a CSV file.
-     * Overwrites the original file if it already exists.
-     */
-    public void writeClassesToCSV(List<ClassInstance> classInstances, String filePath) throws IOException {
-        // Using try-with-resources and default FileWriter behavior to strictly overwrite existing files
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
-            writer.write("ClassInstanceNo,StartDate,EndDate,StartTime,EndTime,Day,Building,Room\n");
-
-            for (ClassInstance instance : classInstances) {
-                String line = String.format("%d%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-                        instance.getClassInstanceNo(), DELIMITER,
-                        instance.getStartDate().format(DATE_FORMATTER), DELIMITER,
-                        instance.getEndDate().format(DATE_FORMATTER), DELIMITER,
-                        instance.getStartTime().format(TIME_FORMATTER), DELIMITER,
-                        instance.getEndTime().format(TIME_FORMATTER), DELIMITER,
-                        instance.getDay(), DELIMITER,
-                        instance.getBuilding(), DELIMITER,
-                        instance.getRoom());
-                writer.write(line);
-                writer.newLine();
-            }
+    public PersistenceAdapter() {
+        try {
+            Files.createDirectories(DATA_DIR);
+            Files.createDirectories(Paths.get("exports"));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not create data directories: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Reads ClassInstances from a CSV file.
-     */
-    public List<ClassInstance> readClassesFromCSV(String filePath) throws IOException {
-        List<ClassInstance> instances = new ArrayList<>();
+    public List<Schedule> loadClasses() throws IOException {
+        if (!Files.exists(CLASS_REPOSITORY)) return new ArrayList<>();
+        return readInternalClassCsv(CLASS_REPOSITORY.toString());
+    }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine(); // Skip header
+    public void saveClasses(List<Schedule> schedules) throws IOException {
+        Files.createDirectories(DATA_DIR);
+        writeInternalClassCsv(schedules, CLASS_REPOSITORY.toString());
+    }
 
+    public List<Schedule> readHandbookCsv(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new IOException("File does not exist: " + filePath);
+        }
+
+        List<Schedule> results = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String headerLine = reader.readLine();
+            if (headerLine == null) throw new IOException("CSV file is empty.");
+            List<String> headers = parseCsvLine(stripBom(headerLine));
+            validateHandbookHeaders(headers);
+
+            String line;
+            int rowNo = 1;
+            int nextRecordId = 1;
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(DELIMITER);
-                if (values.length == 8) {
-                    try {
-                        int instanceNo = Integer.parseInt(values[0].trim());
-                        LocalDate startDate = LocalDate.parse(values[1].trim(), DATE_FORMATTER);
-                        LocalDate endDate = LocalDate.parse(values[2].trim(), DATE_FORMATTER);
-                        LocalTime startTime = LocalTime.parse(values[3].trim(), TIME_FORMATTER);
-                        LocalTime endTime = LocalTime.parse(values[4].trim(), TIME_FORMATTER);
-                        String day = values[5].trim();
-                        String building = values[6].trim();
-                        String room = values[7].trim();
-
-                        instances.add(new ClassInstance(instanceNo, startDate, endDate, startTime, endTime, day, building, room));
-                    } catch (DateTimeParseException | NumberFormatException e) {
-                        System.err.println("Error parsing row due to invalid format: " + line);
-                    }
+                rowNo++;
+                if (line.trim().isEmpty()) continue;
+                List<String> cells = parseCsvLine(line);
+                if (cells.size() != HANDBOOK_HEADERS.size()) {
+                    throw new IOException("CSV row " + rowNo + " has " + cells.size() + " columns; expected 8.");
                 }
+                results.add(mapHandbookRowToSchedule(nextRecordId++, cells, rowNo));
             }
         }
-        return instances;
+        return results;
     }
 
-    // ==========================================
-    // Timetable Repository (Exporting)
-    // ==========================================
-
-    /**
-     * Exports a generated timetable to a CSV file.
-     * Overwrites the file if it exists.
-     */
-    public void exportTimetable(Timetable timetable, List<ClassInstance> scheduledClasses, String filePath) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
-            writer.write("Timetable Code: " + timetable.getTimetableCode() + ", Name: " + timetable.getTimetableName() + "\n");
-            writer.write("Semester: " + timetable.getSemester() + ", Allowed Overlap: " + timetable.isAllowOverlap() + "\n");
-            writer.write("--------------------------------------------------\n");
-            writer.write("ClassInstanceNo,StartDate,EndDate,StartTime,EndTime,Day,Building,Room\n");
-
-            for (ClassInstance instance : scheduledClasses) {
-                String line = String.format("%d%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-                        instance.getClassInstanceNo(), DELIMITER,
-                        instance.getStartDate().format(DATE_FORMATTER), DELIMITER,
-                        instance.getEndDate().format(DATE_FORMATTER), DELIMITER,
-                        instance.getStartTime().format(TIME_FORMATTER), DELIMITER,
-                        instance.getEndTime().format(TIME_FORMATTER), DELIMITER,
-                        instance.getDay(), DELIMITER,
-                        instance.getBuilding(), DELIMITER,
-                        instance.getRoom());
-                writer.write(line);
+    public void writeInternalClassCsv(List<Schedule> schedules, String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (path.getParent() != null) Files.createDirectories(path.getParent());
+        assignMissingRecordIds(schedules);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            writer.write(String.join(",",
+                    "RecordId", "TopicCode", "TopicName", "AttendanceMode", "Campus", "Semester", "AvailabilityNo",
+                    "ClassFormat", "ClassCode", "ClassInstanceNo", "StartDate", "EndDate", "Day",
+                    "StartTime", "EndTime", "Building", "Room"));
+            writer.newLine();
+            for (Schedule s : schedules) {
+                List<String> cells = new ArrayList<>();
+                cells.add(String.valueOf(s.getRecordId()));
+                cells.add(s.getTopic().getTopicCode());
+                cells.add(s.getTopic().getTopicName());
+                cells.add(s.getAvailability().getAttendanceMode());
+                cells.add(s.getAvailability().getCampus());
+                cells.add(s.getAvailability().getSemester());
+                cells.add(String.valueOf(s.getAvailability().getAvailabilityNo()));
+                cells.add(s.getTopicClass().getClassFormat());
+                cells.add(s.getTopicClass().getClassCode());
+                cells.add(String.valueOf(s.getClassInstance().getClassInstanceNo()));
+                cells.add(s.getClassInstance().getStartDate().format(ISO_DATE));
+                cells.add(s.getClassInstance().getEndDate().format(ISO_DATE));
+                cells.add(s.getClassInstance().getDay());
+                cells.add(s.getClassInstance().getStartTime().format(TIME_24));
+                cells.add(s.getClassInstance().getEndTime().format(TIME_24));
+                cells.add(s.getClassInstance().getBuilding());
+                cells.add(s.getClassInstance().getRoom());
+                writer.write(toCsvLine(cells));
                 writer.newLine();
             }
         }
     }
 
-    // ==========================================
-    // Settings Store
-    // ==========================================
-
-    /**
-     * Saves user timetable preferences so the last used settings are remembered.
-     */
-    public void saveSettings(TimetablePreferences preferences) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(SETTINGS_FILE, false))) {
-            writer.write(preferences.getPreferredCampus() + DELIMITER +
-                    preferences.getPreferredTime() + DELIMITER +
-                    preferences.getPreferredDay());
+    public List<Schedule> readInternalClassCsv(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) return new ArrayList<>();
+        List<Schedule> schedules = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String header = reader.readLine();
+            if (header == null) return schedules;
+            String line;
+            int rowNo = 1;
+            while ((line = reader.readLine()) != null) {
+                rowNo++;
+                if (line.trim().isEmpty()) continue;
+                List<String> c = parseCsvLine(line);
+                if (c.size() != 17) {
+                    throw new IOException("Saved class CSV row " + rowNo + " has invalid format.");
+                }
+                int i = 0;
+                int recordId = parseInt(c.get(i++), "RecordId", rowNo);
+                Topic topic = new Topic(c.get(i++), c.get(i++));
+                ClassAvailability availability = new ClassAvailability(c.get(i++), c.get(i++), c.get(i++), parseInt(c.get(i++), "AvailabilityNo", rowNo));
+                TopicClass topicClass = new TopicClass(c.get(i++), c.get(i++));
+                int instanceNo = parseInt(c.get(i++), "ClassInstanceNo", rowNo);
+                LocalDate startDate = LocalDate.parse(c.get(i++), ISO_DATE);
+                LocalDate endDate = LocalDate.parse(c.get(i++), ISO_DATE);
+                String day = c.get(i++);
+                LocalTime startTime = LocalTime.parse(c.get(i++), TIME_24);
+                LocalTime endTime = LocalTime.parse(c.get(i++), TIME_24);
+                String building = c.get(i++);
+                String room = c.get(i++);
+                ClassInstance instance = new ClassInstance(instanceNo, topicClass.getClassCode(), startDate, endDate, startTime, endTime, day, building, room);
+                schedules.add(new Schedule(recordId, topic, availability, topicClass, instance));
+            }
         }
+        return schedules;
     }
 
-    /**
-     * Loads the last used timetable preferences.
-     */
-    public TimetablePreferences loadSettings() throws IOException {
-        File file = new File(SETTINGS_FILE);
-        if (!file.exists()) {
-            return null; // No previous settings found
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line = reader.readLine();
-            if (line != null) {
-                String[] values = line.split(DELIMITER);
-                if (values.length == 3) {
-                    return new TimetablePreferences(values[0].trim(), values[1].trim(), values[2].trim());
+    public void exportTimetable(Timetable timetable, String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (path.getParent() != null) Files.createDirectories(path.getParent());
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            writer.write("Timetable Code," + escape(timetable.getTimetableCode()));
+            writer.newLine();
+            writer.write("Timetable Name," + escape(timetable.getTimetableName()));
+            writer.newLine();
+            writer.write("Semester," + escape(timetable.getSemester()));
+            writer.newLine();
+            writer.write("Allow lecture overlap," + timetable.isAllowOverlap());
+            writer.newLine();
+            writer.newLine();
+            writer.write(String.join(",",
+                    "Topic Code", "Topic Name", "Attendance Mode", "Campus", "Semester", "Availability Number",
+                    "Class", "Class Instance", "Date of First Class", "Date of Last Class", "Day",
+                    "Start Time", "End Time", "Building", "Room"));
+            writer.newLine();
+            for (Schedule s : timetable.getSchedules()) {
+                writer.write(toCsvLine(fullScheduleCells(s, true)));
+                writer.newLine();
+            }
+            if (!timetable.getWarnings().isEmpty()) {
+                writer.newLine();
+                writer.write("Warnings");
+                writer.newLine();
+                for (String warning : timetable.getWarnings()) {
+                    writer.write(escape(warning));
+                    writer.newLine();
                 }
             }
         }
-        return null;
+    }
+
+    public List<String> fullScheduleCells(Schedule s, boolean displayDates) {
+        List<String> cells = new ArrayList<>();
+        cells.add(s.getTopic().getTopicCode());
+        cells.add(s.getTopic().getTopicName());
+        cells.add(s.getAvailability().getAttendanceMode());
+        cells.add(s.getAvailability().getCampus());
+        cells.add(s.getAvailability().getSemester());
+        cells.add(String.valueOf(s.getAvailability().getAvailabilityNo()));
+        cells.add(s.getTopicClass().getClassFormat());
+        cells.add(String.valueOf(s.getClassInstance().getClassInstanceNo()));
+        cells.add(displayDates ? s.getClassInstance().getStartDate().format(DISPLAY_DATE) : s.getClassInstance().getStartDate().format(ISO_DATE));
+        cells.add(displayDates ? s.getClassInstance().getEndDate().format(DISPLAY_DATE) : s.getClassInstance().getEndDate().format(ISO_DATE));
+        cells.add(s.getClassInstance().getDay());
+        cells.add(s.getClassInstance().getStartTime().format(TIME_24));
+        cells.add(s.getClassInstance().getEndTime().format(TIME_24));
+        cells.add(s.getClassInstance().getBuilding());
+        cells.add(s.getClassInstance().getRoom());
+        return cells;
+    }
+
+    public void saveSettings(TimetablePreferences preferences) throws IOException {
+        Files.createDirectories(DATA_DIR);
+        try (BufferedWriter writer = Files.newBufferedWriter(SETTINGS_FILE, StandardCharsets.UTF_8)) {
+            writer.write(toCsvLine(Arrays.asList(
+                    preferences.getTimetableName(),
+                    preferences.getSemester(),
+                    String.valueOf(preferences.isAllowLectureOverlap()),
+                    String.join(";", preferences.getSelectedTopicCodes()),
+                    String.join(";", preferences.getSelectedCampuses()),
+                    String.join(";", preferences.getOrderedPreferences()),
+                    preferences.getPreferredCampus(),
+                    preferences.getPreferredTime(),
+                    preferences.getPreferredDay()
+            )));
+            writer.newLine();
+        }
+    }
+
+    public TimetablePreferences loadSettings() throws IOException {
+        if (!Files.exists(SETTINGS_FILE)) return null;
+        try (BufferedReader reader = Files.newBufferedReader(SETTINGS_FILE, StandardCharsets.UTF_8)) {
+            String line = reader.readLine();
+            if (line == null || line.isBlank()) return null;
+            List<String> c = parseCsvLine(line);
+            if (c.size() < 9) return null;
+            TimetablePreferences p = new TimetablePreferences(c.get(6), c.get(7), c.get(8));
+            p.setTimetableName(c.get(0));
+            p.setSemester(c.get(1));
+            p.setAllowLectureOverlap(Boolean.parseBoolean(c.get(2)));
+            p.setSelectedTopicCodes(splitSemi(c.get(3)));
+            p.setSelectedCampuses(splitSemi(c.get(4)));
+            p.setOrderedPreferences(splitSemi(c.get(5)));
+            return p;
+        }
+    }
+
+    public String safeExportPath(String timetableName) {
+        String base = timetableName == null || timetableName.isBlank() ? "timetable" : timetableName;
+        base = base.replaceAll("[^A-Za-z0-9._-]+", "_");
+        return Paths.get("exports", base + ".csv").toString();
+    }
+
+    public void assignMissingRecordIds(List<Schedule> schedules) {
+        Set<Integer> used = new LinkedHashSet<>();
+        int max = 0;
+        for (Schedule s : schedules) {
+            if (s.getRecordId() > 0) {
+                used.add(s.getRecordId());
+                if (s.getRecordId() > max) max = s.getRecordId();
+            }
+        }
+        int next = max + 1;
+        for (Schedule s : schedules) {
+            if (s.getRecordId() <= 0 || used.contains(s.getRecordId()) && countId(schedules, s.getRecordId()) > 1) {
+                while (used.contains(next)) next++;
+                s.setRecordId(next);
+                used.add(next);
+                next++;
+            }
+        }
+    }
+
+    private int countId(List<Schedule> schedules, int id) {
+        int count = 0;
+        for (Schedule s : schedules) if (s.getRecordId() == id) count++;
+        return count;
+    }
+
+    private Schedule mapHandbookRowToSchedule(int recordId, List<String> cells, int rowNo) throws IOException {
+        String topicRaw = cells.get(0).trim();
+        String availabilityRaw = cells.get(1).trim();
+        String classRaw = cells.get(2).trim();
+        int classInstanceNo = parseInt(cells.get(3), "Class instance", rowNo);
+        LocalDate[] dates = parseDateRange(cells.get(4), rowNo);
+        String day = cells.get(5).trim();
+        LocalTime[] times = parseTimeRange(cells.get(6), rowNo);
+        String[] location = parseLocation(cells.get(7));
+
+        Topic topic = parseTopic(topicRaw);
+        ClassAvailability availability = parseAvailability(availabilityRaw, rowNo);
+        TopicClass topicClass = new TopicClass(classRaw, classRaw);
+        ClassInstance instance = new ClassInstance(classInstanceNo, topicClass.getClassCode(),
+                dates[0], dates[1], times[0], times[1], day, location[0], location[1]);
+        return new Schedule(recordId, topic, availability, topicClass, instance);
+    }
+
+    private Topic parseTopic(String topicRaw) throws IOException {
+        if (topicRaw.isBlank()) throw new IOException("Topic column is empty.");
+        String[] parts = topicRaw.trim().split("\\s+", 2);
+        String code = parts[0].trim();
+        String name = parts.length > 1 ? parts[1].trim() : "";
+        return new Topic(code, name);
+    }
+
+    private ClassAvailability parseAvailability(String availabilityRaw, int rowNo) throws IOException {
+        String[] raw = availabilityRaw.split("\\s+-\\s+");
+        if (raw.length < 4) {
+            throw new IOException("CSV row " + rowNo + " has invalid Availability format. Expected 'Attendance - Campus - Semester - Number'.");
+        }
+        String attendanceMode = raw[0].trim();
+        String semester = raw[raw.length - 2].trim();
+        int availabilityNo = parseInt(raw[raw.length - 1], "Availability number", rowNo);
+        String campus = String.join(" - ", Arrays.copyOfRange(raw, 1, raw.length - 2)).trim();
+        return new ClassAvailability(attendanceMode, campus, semester, availabilityNo);
+    }
+
+    private LocalDate[] parseDateRange(String text, int rowNo) throws IOException {
+        String[] parts = text.split("\\s+-\\s+");
+        if (parts.length == 0 || parts.length > 2) throw new IOException("CSV row " + rowNo + " has invalid Date range.");
+        LocalDate start = parseDayMonth(parts[0].trim(), rowNo);
+        LocalDate end = parts.length == 2 ? parseDayMonth(parts[1].trim(), rowNo) : start;
+        if (end.isBefore(start)) end = end.plusYears(1);
+        return new LocalDate[]{start, end};
+    }
+
+    private LocalDate parseDayMonth(String text, int rowNo) throws IOException {
+        DateTimeFormatter f = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern("d MMM")
+                .parseDefaulting(ChronoField.YEAR, Year.now().getValue())
+                .toFormatter(Locale.ENGLISH);
+        try {
+            return LocalDate.parse(text, f);
+        } catch (DateTimeParseException e) {
+            throw new IOException("CSV row " + rowNo + " has invalid date: " + text);
+        }
+    }
+
+    private LocalTime[] parseTimeRange(String text, int rowNo) throws IOException {
+        String[] parts = text.split("\\s+-\\s+");
+        if (parts.length != 2) throw new IOException("CSV row " + rowNo + " has invalid Time range.");
+        return new LocalTime[]{parseTime(parts[0].trim(), rowNo), parseTime(parts[1].trim(), rowNo)};
+    }
+
+    private LocalTime parseTime(String text, int rowNo) throws IOException {
+        try {
+            return LocalTime.parse(text, TIME_24);
+        } catch (DateTimeParseException e) {
+            throw new IOException("CSV row " + rowNo + " has invalid 24-hour time: " + text);
+        }
+    }
+
+    private String[] parseLocation(String locationRaw) {
+        String location = locationRaw == null ? "" : locationRaw.trim();
+        int comma = location.indexOf(',');
+        if (comma >= 0) {
+            return new String[]{location.substring(0, comma).trim(), location.substring(comma + 1).trim()};
+        }
+        return new String[]{location, ""};
+    }
+
+    private void validateHandbookHeaders(List<String> headers) throws IOException {
+        if (headers.size() != HANDBOOK_HEADERS.size()) {
+            throw new IOException("CSV header is invalid. Expected 8 columns: " + HANDBOOK_HEADERS);
+        }
+        for (int i = 0; i < HANDBOOK_HEADERS.size(); i++) {
+            if (!HANDBOOK_HEADERS.get(i).equalsIgnoreCase(headers.get(i).trim())) {
+                throw new IOException("CSV header column " + (i + 1) + " should be '" + HANDBOOK_HEADERS.get(i) + "' but was '" + headers.get(i) + "'.");
+            }
+        }
+    }
+
+    private int parseInt(String text, String fieldName, int rowNo) throws IOException {
+        try {
+            return Integer.parseInt(text.trim());
+        } catch (NumberFormatException e) {
+            throw new IOException("CSV row " + rowNo + " has invalid integer for " + fieldName + ": " + text);
+        }
+    }
+
+    private List<String> splitSemi(String text) {
+        List<String> out = new ArrayList<>();
+        if (text == null || text.isBlank()) return out;
+        for (String part : text.split(";")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) out.add(trimmed);
+        }
+        return out;
+    }
+
+    private String stripBom(String s) {
+        return s != null && !s.isEmpty() && s.charAt(0) == '\uFEFF' ? s.substring(1) : s;
+    }
+
+    public List<String> parseCsvLine(String line) throws IOException {
+        List<String> values = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+        for (int i = 0; i < line.length(); i++) {
+            char ch = line.charAt(i);
+            if (ch == '"') {
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    current.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (ch == ',' && !inQuotes) {
+                values.add(current.toString().trim());
+                current.setLength(0);
+            } else {
+                current.append(ch);
+            }
+        }
+        if (inQuotes) throw new IOException("CSV line has an unclosed quote: " + line);
+        values.add(current.toString().trim());
+        return values;
+    }
+
+    private String toCsvLine(List<String> cells) {
+        List<String> escaped = new ArrayList<>();
+        for (String cell : cells) escaped.add(escape(cell));
+        return String.join(",", escaped);
+    }
+
+    private String escape(String value) {
+        if (value == null) return "";
+        boolean mustQuote = value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r");
+        String escaped = value.replace("\"", "\"\"");
+        return mustQuote ? "\"" + escaped + "\"" : escaped;
     }
 }

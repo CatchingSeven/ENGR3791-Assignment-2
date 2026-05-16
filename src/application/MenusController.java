@@ -1,58 +1,47 @@
-package controller;
+package application;
 
 import domain.TimetablePreferences;
 
-/**
- * MenusController acts as the primary coordinator for application state and navigation.
- */
+/** Layer 2 component: MenusController with SessionState and RootRouter responsibilities. */
 public class MenusController {
-
     private final SessionState sessionState;
     private final RootRouter rootRouter;
 
     public MenusController() {
         this.sessionState = new SessionState();
-        this.rootRouter = new RootRouter(this.sessionState);
+        this.rootRouter = new RootRouter(sessionState);
     }
 
     public SessionState getSessionState() { return sessionState; }
     public RootRouter getRootRouter() { return rootRouter; }
 
-    // ==========================================
-    // Internal Components
-    // ==========================================
-
-    public class SessionState {
+    public static class SessionState {
         private String currentMenuLocation = "MAIN_MENU";
         private TimetablePreferences lastUsedSettings;
         private boolean hasUnsavedChanges = false;
 
         public String getCurrentMenuLocation() { return currentMenuLocation; }
-        public void setCurrentMenuLocation(String location) { this.currentMenuLocation = location; }
+        public void setCurrentMenuLocation(String currentMenuLocation) { this.currentMenuLocation = currentMenuLocation; }
 
         public TimetablePreferences getLastUsedSettings() { return lastUsedSettings; }
-        public void setLastUsedSettings(TimetablePreferences settings) { this.lastUsedSettings = settings; }
+        public void setLastUsedSettings(TimetablePreferences lastUsedSettings) { this.lastUsedSettings = lastUsedSettings; }
 
         public boolean hasUnsavedChanges() { return hasUnsavedChanges; }
         public void setHasUnsavedChanges(boolean hasUnsavedChanges) { this.hasUnsavedChanges = hasUnsavedChanges; }
     }
 
-    public class RootRouter {
+    public static class RootRouter {
         private final SessionState state;
 
         public RootRouter(SessionState state) {
             this.state = state;
         }
 
-        /**
-         * Routes the user to a new menu, checking for unsaved work if exiting.
-         */
         public boolean requestRoute(String targetMenu, boolean confirmExitWithoutSaving) {
-            if (targetMenu.equalsIgnoreCase("EXIT") && state.hasUnsavedChanges() && !confirmExitWithoutSaving) {
-                // Returns false to notify the Presentation layer to prompt for a save confirmation
+            if ("EXIT".equalsIgnoreCase(targetMenu) && state.hasUnsavedChanges() && !confirmExitWithoutSaving) {
                 return false;
             }
-            state.setCurrentMenuLocation(targetMenu.toUpperCase());
+            state.setCurrentMenuLocation(targetMenu == null ? "UNKNOWN" : targetMenu.toUpperCase());
             return true;
         }
     }

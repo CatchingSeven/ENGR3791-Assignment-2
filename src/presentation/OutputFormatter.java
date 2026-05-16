@@ -1,79 +1,128 @@
 package presentation;
 
-import domain.ClassInstance;
+import businesslogic.SearchService;
+import domain.Schedule;
+import domain.Timetable;
+
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * OutputFormatter manages the visual presentation of data in the console.
- */
+/** Layer 1 component: OutputFormatter with TablePrinter, AnsiStyler and MessageWriter responsibilities. */
 public class OutputFormatter {
-
     public final AnsiStyler styler = new AnsiStyler();
     public final TablePrinter tablePrinter = new TablePrinter();
     public final MessageWriter messageWriter = new MessageWriter();
 
-    // ==========================================
-    // Internal Components
-    // ==========================================
-
     public class AnsiStyler {
-        public static final String RESET = "\u001B[0m";
-        public static final String BOLD = "\u001B[1m";
-        public static final String ITALIC = "\u001B[3m";
-        public static final String UNDERLINE = "\u001B[4m";
-        public static final String RED = "\u001B[31m";
-        public static final String GREEN = "\u001B[32m";
-        public static final String YELLOW = "\u001B[33m";
-        public static final String CYAN = "\u001B[36m";
+        public final String RESET = "\u001B[0m";
+        public final String BOLD = "\u001B[1m";
+        public final String ITALIC = "\u001B[3m";
+        public final String UNDERLINE = "\u001B[4m";
+        public final String RED = "\u001B[31m";
+        public final String GREEN = "\u001B[32m";
+        public final String YELLOW = "\u001B[33m";
+        public final String CYAN = "\u001B[36m";
+        public final String DIM = "\u001B[2m";
 
-        public String applyBold(String text) { return BOLD + text + RESET; }
-        public String applyRed(String text) { return RED + text + RESET; }
-        public String applyGreen(String text) { return GREEN + text + RESET; }
-        public String applyCyanTitle(String text) { return CYAN + BOLD + UNDERLINE + text + RESET; }
+        public String bold(String text) { return BOLD + text + RESET; }
+        public String italic(String text) { return ITALIC + text + RESET; }
+        public String underline(String text) { return UNDERLINE + text + RESET; }
+        public String red(String text) { return RED + text + RESET; }
+        public String green(String text) { return GREEN + text + RESET; }
+        public String yellow(String text) { return YELLOW + text + RESET; }
+        public String cyanTitle(String text) { return CYAN + BOLD + UNDERLINE + text + RESET; }
+        public String dim(String text) { return DIM + text + RESET; }
     }
 
     public class MessageWriter {
-        public void printError(String message) {
-            System.out.println(styler.applyRed("[ERROR] " + message));
-        }
-
-        public void printSuccess(String message) {
-            System.out.println(styler.applyGreen("[SUCCESS] " + message));
-        }
-
-        public void printWarning(String message) {
-            System.out.println(styler.applyBold(AnsiStyler.YELLOW + "[WARNING] " + message + AnsiStyler.RESET));
-        }
-
-        public void printImportResults(int newRecords, int updatedRecords) {
-            System.out.println(styler.applyBold("\n--- Import Complete ---"));
-            printSuccess("Total new records imported: " + newRecords);
-            printSuccess("Total existing records updated: " + updatedRecords);
-            System.out.println("-----------------------\n");
-        }
+        public void printError(String message) { System.out.println(styler.red("[ERROR] " + message)); }
+        public void printSuccess(String message) { System.out.println(styler.green("[SUCCESS] " + message)); }
+        public void printWarning(String message) { System.out.println(styler.yellow("[WARNING] " + message)); }
+        public void printInfo(String message) { System.out.println(styler.dim(message)); }
+        public void heading(String text) { System.out.println(styler.cyanTitle("\n" + text)); }
     }
 
     public class TablePrinter {
-        /**
-         * Formats class instance data cleanly into a console table.
-         */
-        public void printClassTable(List<ClassInstance> classes) {
+        private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd MMM yyyy");
+
+        public void printClassTable(List<Schedule> classes) {
             if (classes == null || classes.isEmpty()) {
-                messageWriter.printWarning("No classes found to display.");
+                messageWriter.printWarning("No classes found.");
                 return;
             }
-
-            System.out.println(styler.applyCyanTitle("\nClass Schedule Data"));
-            System.out.printf(AnsiStyler.BOLD + "%-5s | %-12s | %-12s | %-6s | %-6s | %-10s | %-20s | %-10s%n" + AnsiStyler.RESET,
-                    "ID", "Start Date", "End Date", "Start", "End", "Day", "Building", "Room");
-            System.out.println("------------------------------------------------------------------------------------------------------");
-
-            for (ClassInstance c : classes) {
-                System.out.printf("%-5d | %-12s | %-12s | %-6s | %-6s | %-10s | %-20s | %-10s%n",
-                        c.getClassInstanceNo(), c.getStartDate(), c.getEndDate(),
-                        c.getStartTime(), c.getEndTime(), c.getDay(), c.getBuilding(), c.getRoom());
+            System.out.println(styler.cyanTitle("\nClass Data"));
+            System.out.printf(styler.bold("%-4s | %-9s | %-34s | %-13s | %-20s | %-3s | %-5s | %-11s | %-9s | %-11s | %-5s | %-5s | %-18s | %-22s%n"),
+                    "ID", "Topic", "Name", "Class", "Campus", "Sem", "Avail", "Inst", "Day", "First", "Start", "End", "Building", "Room");
+            System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            for (Schedule s : classes) {
+                System.out.printf("%-4d | %-9s | %-34s | %-13s | %-20s | %-3s | %-5d | %-11d | %-9s | %-11s | %-5s | %-5s | %-18s | %-22s%n",
+                        s.getRecordId(),
+                        truncate(s.getTopic().getTopicCode(), 9),
+                        truncate(s.getTopic().getTopicName(), 34),
+                        truncate(s.getTopicClass().getClassFormat(), 13),
+                        truncate(s.getAvailability().getCampus(), 20),
+                        s.getAvailability().getSemester(),
+                        s.getAvailability().getAvailabilityNo(),
+                        s.getClassInstance().getClassInstanceNo(),
+                        truncate(s.getClassInstance().getDay(), 9),
+                        s.getClassInstance().getStartDate().format(dateFmt),
+                        s.getClassInstance().getStartTime(),
+                        s.getClassInstance().getEndTime(),
+                        truncate(s.getClassInstance().getBuilding(), 18),
+                        truncate(s.getClassInstance().getRoom(), 22));
             }
-            System.out.println("------------------------------------------------------------------------------------------------------\n");
+        }
+
+        public void printBrowseTable(List<SearchService.BrowseClassSummary> classes) {
+            if (classes == null || classes.isEmpty()) {
+                messageWriter.printWarning("No class groups found.");
+                return;
+            }
+            System.out.println(styler.cyanTitle("\nBrowse Classes (combined by topic, availability, class and instance)"));
+            System.out.printf(styler.bold("%-4s | %-9s | %-34s | %-15s | %-20s | %-3s | %-5s | %-13s | %-5s | %-10s%n"),
+                    "ID", "Topic", "Name", "Attendance", "Campus", "Sem", "Avail", "Class", "Inst", "Rows");
+            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
+            for (SearchService.BrowseClassSummary s : classes) {
+                System.out.printf("%-4d | %-9s | %-34s | %-15s | %-20s | %-3s | %-5d | %-13s | %-5d | %-10d%n",
+                        s.getFirstRecordId(), truncate(s.getTopicCode(), 9), truncate(s.getTopicName(), 34),
+                        truncate(s.getAttendanceMode(), 15), truncate(s.getCampus(), 20), s.getSemester(),
+                        s.getAvailabilityNo(), truncate(s.getClassFormat(), 13), s.getClassInstanceNo(), s.getOccurrenceCount());
+            }
+        }
+
+        public void printTimetableSummary(List<Timetable> timetables) {
+            if (timetables == null || timetables.isEmpty()) {
+                messageWriter.printWarning("No timetables have been generated yet.");
+                return;
+            }
+            System.out.println(styler.cyanTitle("\nTimetables"));
+            System.out.printf(styler.bold("%-8s | %-25s | %-8s | %-7s | %-6s | %-8s%n"), "Code", "Name", "Semester", "Classes", "Score", "Warnings");
+            System.out.println("--------------------------------------------------------------------------------");
+            for (Timetable t : timetables) {
+                System.out.printf("%-8s | %-25s | %-8s | %-7d | %-6d | %-8d%n",
+                        t.getTimetableCode(), truncate(t.getTimetableName(), 25), t.getSemester(), t.getSchedules().size(), t.getScore(), t.getWarnings().size());
+            }
+        }
+
+        public void printTimetable(Timetable timetable) {
+            if (timetable == null) {
+                messageWriter.printWarning("Timetable not found.");
+                return;
+            }
+            System.out.println(styler.cyanTitle("\n" + timetable.getTimetableCode() + " - " + timetable.getTimetableName()));
+            System.out.println(styler.bold("Semester: ") + timetable.getSemester() + "   " + styler.bold("Allow lecture overlap: ") + timetable.isAllowOverlap());
+            printClassTable(timetable.getSchedules());
+            if (!timetable.getWarnings().isEmpty()) {
+                messageWriter.printWarning("Issues detected:");
+                for (String warning : timetable.getWarnings()) System.out.println(" - " + warning);
+            }
+        }
+
+        private String truncate(String value, int width) {
+            if (value == null) return "";
+            if (value.length() <= width) return value;
+            if (width <= 3) return value.substring(0, width);
+            return value.substring(0, width - 3) + "...";
         }
     }
 }
