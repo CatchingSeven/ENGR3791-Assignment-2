@@ -89,9 +89,9 @@ public class TimetableController {
         return exportHandler.processExport(timetable, filePath);
     }
 
-    public ExportHandler getExportHandler() { return exportHandler; }
-    public GenerateHandler getGenerateHandler() { return generateHandler; }
-    public EditHandler getEditHandler() { return editHandler; }
+    //public ExportHandler getExportHandler() { return exportHandler; }
+    //public GenerateHandler getGenerateHandler() { return generateHandler; }
+    //public EditHandler getEditHandler() { return editHandler; }
 
     public class GenerateHandler {
         public Timetable processGenerate(TimetablePreferences preferences, List<Schedule> classDatabase) {

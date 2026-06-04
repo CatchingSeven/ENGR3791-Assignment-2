@@ -72,6 +72,6 @@ public class PreferenceEngine {
         if (p.contains("wednesday")) return "wednesday";
         if (p.contains("thursday")) return "thursday";
         if (p.contains("friday")) return "friday";
-        return p;
+        return p; //Impossible to hit this line
     }
 }
