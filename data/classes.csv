@@ -1,0 +1,4 @@
+RecordId,TopicCode,TopicName,AttendanceMode,Campus,Semester,AvailabilityNo,ClassFormat,ClassCode,ClassInstanceNo,StartDate,EndDate,Day,StartTime,EndTime,Building,Room
+1,COMP1701,Game Design Updated,In person,Tonsley,S2,1,Workshop,Workshop,1,2026-07-27,2026-09-14,Monday,09:00,10:00,Building,Room
+2,COMP1701,Game Design,In person,Tonsley,S2,1,Tutorial,Tutorial,1,2026-07-27,2026-09-14,Wednesday,09:00,10:00,Building,Room
+3,COMP1702,Programming,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-07-27,2026-09-14,Tuesday,09:00,10:00,Building,Room
