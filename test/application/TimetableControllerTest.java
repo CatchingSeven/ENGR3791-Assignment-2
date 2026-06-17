@@ -46,9 +46,9 @@ class TimetableControllerTest {
         prefTopic = new ArrayList<>();
         classController.loadSavedClasses();
 
-        prefTopic.add("COM1102");
+        prefTopic.add("COMP1102");
         prefTopic.add("COMP1103");
-        prefTopic.add("COM1002");
+        prefTopic.add("COMP1002");
         timetablePreferences.setSelectedTopicCodes(prefTopic);
     }
 
@@ -95,7 +95,7 @@ class TimetableControllerTest {
         List<Schedule> list = timetableController.getSwapCandidates(timetable, 1, classController.getAllClasses());
         int candidate = list.get(0).getRecordId();
 
-        TimetableController.SwapResult result1 = timetableController.swapClass("TT-1", 1, 3, classController.getAllClasses(), true);
+        TimetableController.SwapResult result1 = timetableController.swapClass("TT-1", 1, candidate, classController.getAllClasses(), true);
         TimetableController.SwapResult result2 = timetableController.swapClass("TT-2", 232524, 356134, classController.getAllClasses(), false);
 
         assertAll(
