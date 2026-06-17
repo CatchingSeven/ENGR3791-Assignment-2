@@ -9,6 +9,7 @@ import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class ScheduleTest {
     @DisplayName("1.3.1 - Builds schedule with selected classes")
     @Tag("Critical")

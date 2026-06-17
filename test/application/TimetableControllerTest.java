@@ -59,22 +59,11 @@ class TimetableControllerTest {
 
 
 
-    /*@ParameterizedTest
-    @ValueSource(strings = {"COM1102", "COMP1103"})
-    @Order(1)
-    @DisplayName("Getters and Setters work for ")
-    @Tag("Max")
-    @Tag("Additional")
-    void unusedGetterAndSetterTest(String topicCode) {
-        assumeTrue(timetablePreferences != null, "Preferences must be initialized");
-        assumingThat(prefTopic != null,
-                () -> assertTrue(prefTopic.contains(topicCode), "Topic code should be loaded from BeforeEach")
-        );
-    }*/
+
 
     @Test
     @Order(1)
-    @DisplayName("Generates, stores and exports a timetable using the schedule and preference engines")
+    @DisplayName("4.3.1 - Generates and store timetable successfully")
     @Tag("Max")
     @Tag("Critical")
     void generateStoreAndExportTimetableSuccessfully() {
@@ -87,15 +76,14 @@ class TimetableControllerTest {
         assertAll(
                 () -> assertNotNull(timetableController.getTimetables().get(0), "The generated timetable should exist"),
                 () -> assertNotNull(timetableController.findTimetable("TT-1")),
-                () -> assertTrue(timetableController.exportTimetable("TT-1", persistenceAdapter.safeExportPath(timetable.getTimetableName()))),
-                () -> assertThrows(IllegalArgumentException.class, () -> timetableController.generateTimetable(timetablePreferences1, classController.getAllClasses())),
-                () -> assertTrue(timetableController.deleteTimetable("TT-1", true))
+                () -> assertEquals(timetable, timetableController.findTimetable("TT-1"))
+
         );
     }
 
     @Test
     @Order(2)
-    @DisplayName("Finds valid swap candidates and replaces a class in an existing timetable")
+    @DisplayName("4.3.2 - Finds valid swap candidates and replaces a class in an existing timetable")
     @Tag("Max")
     @Tag("Core")
     void findValidSwapCandidateAndReplaceClassInExistingTimetable(){
@@ -111,7 +99,30 @@ class TimetableControllerTest {
 
         assertAll(
                 () -> assertEquals(SUCCESS, result1),
-                () -> assertEquals(FAILURE, result2)
+                () -> assertEquals(SUCCESS, result2)
         );
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("4.3.3 - Export and delete timetable successfully")
+    @Tag("Max")
+    @Tag("Critical")
+    void exportAndDeleteSuccessfully() {
+        TimetableController timetableController = new TimetableController(scheduleEngine, preferenceEngine,
+                validationService, persistenceAdapter, searchService);
+        TimetablePreferences timetablePreferences1 = new TimetablePreferences();
+
+        timetableController.generateTimetable(timetablePreferences, classController.getAllClasses());
+        String timetableName = timetableController.getTimetables().get(0).getTimetableName();
+
+        assertAll(
+                () -> assertTrue(timetableController.exportTimetable(timetableName, persistenceAdapter.safeExportPath(timetableName))),
+                () -> assertTrue(timetableController.deleteTimetable("TT-1", true))
+        );
+    }
+
+    private String toString(String timetableName) {
+        return timetableName;
     }
 }

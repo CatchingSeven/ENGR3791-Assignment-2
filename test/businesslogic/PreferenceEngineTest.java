@@ -83,7 +83,6 @@ class PreferenceEngineTest {
     @Tag("Core")
     void rankTimetableSoBestPreferenceMatchAppearFirst(){
         assumeTrue(classController != null, "Controller must be loaded");
-        //unfortunately timetable controller cant be used either get rid of this we will manually have to rewrite the functionality
         TimetableController timetableController = new TimetableController(scheduleEngine, preferenceEngine,
                 validationService, persistenceAdapter, searchService);
 
