@@ -1,4 +1,73 @@
 RecordId,TopicCode,TopicName,AttendanceMode,Campus,Semester,AvailabilityNo,ClassFormat,ClassCode,ClassInstanceNo,StartDate,EndDate,Day,StartTime,EndTime,Building,Room
-1,COMP1701,Game Design Updated,In person,Tonsley,S2,1,Workshop,Workshop,1,2026-07-27,2026-09-14,Monday,09:00,10:00,Building,Room
-2,COMP1701,Game Design,In person,Tonsley,S2,1,Tutorial,Tutorial,1,2026-07-27,2026-09-14,Wednesday,09:00,10:00,Building,Room
-3,COMP1702,Programming,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-07-27,2026-09-14,Tuesday,09:00,10:00,Building,Room
+1,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,1,2026-03-11,2026-04-08,Wednesday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+2,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,1,2026-04-29,2026-06-10,Wednesday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+3,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,2,2026-03-10,2026-04-07,Tuesday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+4,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,2,2026-04-28,2026-06-09,Tuesday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+5,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,3,2026-03-13,2026-03-27,Friday,09:00,11:00,Info Sci & Tech,301 BYOD Computer Lab
+6,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,3,2026-04-02,2026-04-02,Thursday (once-only),12:00,14:00,Info Sci & Tech,201 Computer Lab
+7,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,3,2026-04-10,2026-04-10,Friday (once-only),09:00,11:00,Info Sci & Tech,301 BYOD Computer Lab
+8,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,3,2026-05-01,2026-06-12,Friday,09:00,11:00,Info Sci & Tech,301 BYOD Computer Lab
+9,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,4,2026-03-12,2026-04-09,Thursday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+10,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,4,2026-04-30,2026-06-11,Thursday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+11,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,5,2026-03-11,2026-04-08,Wednesday,12:00,14:00,Info Sci & Tech,301 BYOD Computer Lab
+12,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Laboratory,Laboratory,5,2026-04-29,2026-06-10,Wednesday,12:00,14:00,Info Sci & Tech,301 BYOD Computer Lab
+13,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-02,2026-03-02,Monday (once-only),15:00,17:00,South Lec Theatres,STH2 South Theatre 2
+14,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-10,2026-03-10,Tuesday (once-only),08:00,10:00,South Lec Theatres,STH2 South Theatre 2
+15,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-16,2026-03-30,Monday,15:00,17:00,South Lec Theatres,STH2 South Theatre 2
+16,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-04-07,2026-04-07,Tuesday (once-only),08:00,10:00,Humanities,NTH2 North Theatre 2
+17,COMP1002,Fundamentals of Artificial Intelligence,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-04-27,2026-06-01,Monday,15:00,17:00,South Lec Theatres,STH2 South Theatre 2
+18,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-03-03,2026-04-07,Tuesday,11:00,14:00,Festival Tower,505 Collaborative Learning
+19,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-04-28,2026-06-09,Tuesday,11:00,14:00,Festival Tower,505 Collaborative Learning
+20,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,2,2026-03-05,2026-04-09,Thursday,08:00,11:00,Festival Tower,505 Collaborative Learning
+21,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,2,2026-04-30,2026-06-11,Thursday,08:00,11:00,Festival Tower,505 Collaborative Learning
+22,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,3,2026-03-06,2026-03-27,Friday,10:00,13:00,Festival Tower,505 Collaborative Learning
+23,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,3,2026-04-01,2026-04-01,Wednesday (once-only),17:00,20:00,Festival Tower,505 Collaborative Learning
+24,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,3,2026-04-10,2026-04-10,Friday (once-only),10:00,13:00,Festival Tower,505 Collaborative Learning
+25,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,3,2026-05-01,2026-06-12,Friday,10:00,13:00,Festival Tower,505 Collaborative Learning
+26,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,4,2026-03-06,2026-03-27,Friday,15:00,18:00,Festival Tower,507 Collaborative Learning
+27,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,4,2026-04-02,2026-04-02,Thursday (once-only),18:00,21:00,Festival Tower,507 Collaborative Learning
+28,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,4,2026-04-10,2026-04-10,Friday (once-only),15:00,18:00,Festival Tower,507 Collaborative Learning
+29,COMP1002,Fundamentals of Artificial Intelligence,In person,Flinders City Campus,S1,1,Workshop,Workshop,4,2026-05-01,2026-06-12,Friday,15:00,18:00,Festival Tower,507 Collaborative Learning
+30,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-02,2026-03-02,Monday (once-only),12:00,14:00,Info Sci & Tech,STH3 South Theatre 3
+31,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-13,2026-03-13,Friday (once-only),16:00,18:00,Info Sci & Tech,STH3 South Theatre 3
+32,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-03-16,2026-03-30,Monday,12:00,14:00,Info Sci & Tech,STH3 South Theatre 3
+33,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-04-10,2026-04-10,Friday (once-only),16:00,18:00,Info Sci & Tech,STH3 South Theatre 3
+34,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Lecture,Lecture,1,2026-04-27,2026-06-01,Monday,12:00,14:00,Info Sci & Tech,STH3 South Theatre 3
+35,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,1,2026-03-03,2026-04-07,Tuesday,08:00,10:00,Info Sci & Tech,301 BYOD Computer Lab
+36,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,1,2026-04-28,2026-06-09,Tuesday,08:00,10:00,Info Sci & Tech,301 BYOD Computer Lab
+37,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,2,2026-03-03,2026-04-07,Tuesday,10:00,12:00,Info Sci & Tech,301 BYOD Computer Lab
+38,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,2,2026-04-28,2026-06-09,Tuesday,10:00,12:00,Info Sci & Tech,301 BYOD Computer Lab
+39,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,3,2026-03-03,2026-04-07,Tuesday,16:00,18:00,Info Sci & Tech,301 BYOD Computer Lab
+40,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,3,2026-04-28,2026-06-09,Tuesday,16:00,18:00,Info Sci & Tech,301 BYOD Computer Lab
+41,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,4,2026-03-03,2026-04-07,Tuesday,12:00,14:00,Info Sci & Tech,301 BYOD Computer Lab
+42,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,4,2026-04-28,2026-06-09,Tuesday,12:00,14:00,Info Sci & Tech,301 BYOD Computer Lab
+43,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,5,2026-03-06,2026-03-27,Friday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+44,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,5,2026-03-30,2026-03-30,Monday (once-only),17:00,19:00,Info Sci & Tech,201 Computer Lab
+45,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,5,2026-04-10,2026-04-10,Friday (once-only),14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+46,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Practical,Practical,5,2026-05-01,2026-06-12,Friday,14:00,16:00,Info Sci & Tech,301 BYOD Computer Lab
+47,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,1,2026-03-16,2026-03-30,Monday,14:00,15:00,Info Sci & Tech,220 Tutorial Room
+48,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,1,2026-04-27,2026-06-01,Monday,14:00,15:00,Info Sci & Tech,220 Tutorial Room
+49,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,2,2026-03-13,2026-03-27,Friday,12:00,13:00,Info Sci & Tech,220 Tutorial Room
+50,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,2,2026-04-10,2026-04-10,Friday (once-only),12:00,13:00,Info Sci & Tech,220 Tutorial Room
+51,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,2,2026-05-01,2026-06-12,Friday,12:00,13:00,Info Sci & Tech,220 Tutorial Room
+52,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,3,2026-03-13,2026-03-27,Friday,13:00,14:00,Info Sci & Tech,220 Tutorial Room
+53,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,3,2026-04-10,2026-04-10,Friday (once-only),13:00,14:00,Info Sci & Tech,220 Tutorial Room
+54,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,3,2026-05-01,2026-06-12,Friday,13:00,14:00,Info Sci & Tech,220 Tutorial Room
+55,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,4,2026-03-11,2026-04-08,Wednesday,09:00,10:00,Info Sci & Tech,220 Tutorial Room
+56,COMP1102,Programming Fundamentals,In person,Bedford Park,S1,1,Tutorial,Tutorial,4,2026-04-29,2026-06-10,Wednesday,09:00,10:00,Info Sci & Tech,220 Tutorial Room
+57,COMP1102,Programming Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-03-03,2026-04-07,Tuesday,14:00,17:00,Festival Tower,505 Collaborative Learning
+58,COMP1102,Programming Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-04-28,2026-06-09,Tuesday,14:00,17:00,Festival Tower,505 Collaborative Learning
+59,COMP1102,Programming Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,2,2026-03-04,2026-04-08,Wednesday,14:00,17:00,Festival Tower,605 Collaborative Learning
+60,COMP1102,Programming Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,2,2026-04-29,2026-06-10,Wednesday,14:00,17:00,Festival Tower,605 Collaborative Learning
+61,COMP1103,UX Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-03-05,2026-04-09,Thursday,11:00,14:00,Festival Tower,505 Collaborative Learning
+62,COMP1103,UX Fundamentals,In person,Flinders City Campus,S1,1,Workshop,Workshop,1,2026-04-30,2026-06-11,Thursday,11:00,14:00,Festival Tower,505 Collaborative Learning
+63,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,1,2026-03-03,2026-04-07,Tuesday,14:00,15:30,Tonsley T1,G.07 Digital Fabrication Laboratory
+64,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,1,2026-04-28,2026-06-09,Tuesday,14:00,15:30,Tonsley T1,G.07 Digital Fabrication Laboratory
+65,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,2,2026-03-06,2026-03-27,Friday,09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+66,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,2,2026-04-10,2026-04-10,Friday (once-only),09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+67,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,2,2026-05-01,2026-06-12,Friday,09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+68,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,6,2026-03-02,2026-03-16,Monday (fortnightly),09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+69,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,6,2026-03-23,2026-03-30,Monday,09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+70,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Tutorial,Tutorial,6,2026-04-27,2026-06-01,Monday,09:30,11:00,Tonsley T1,G.07 Digital Fabrication Laboratory
+71,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Workshop,Workshop,1,2026-03-04,2026-04-08,Wednesday,10:00,12:00,Tonsley T1,G.42 Tonsley Theatre 1
+72,COMP1103,UX Fundamentals,In person,Tonsley,S1,1,Workshop,Workshop,1,2026-04-29,2026-06-10,Wednesday,10:00,12:00,Tonsley T1,G.42 Tonsley Theatre 1

@@ -92,14 +92,15 @@ class TimetableControllerTest {
 
         Timetable timetable = timetableController.generateTimetable(timetablePreferences, classController.getAllClasses());
         Timetable timetable1 = timetableController.generateTimetable(timetablePreferences, classController.getAllClasses());
-        List<Schedule> list = timetableController.getSwapCandidates(timetable, 63, classController.getAllClasses());
+        List<Schedule> list = timetableController.getSwapCandidates(timetable, 1, classController.getAllClasses());
+        int candidate = list.get(0).getRecordId();
 
-        TimetableController.SwapResult result1 = timetableController.swapClass("TT-1", 63, 64, classController.getAllClasses(), true);
-        TimetableController.SwapResult result2 = timetableController.swapClass("TT-2", 0, 0, classController.getAllClasses(), false);
+        TimetableController.SwapResult result1 = timetableController.swapClass("TT-1", 1, 3, classController.getAllClasses(), true);
+        TimetableController.SwapResult result2 = timetableController.swapClass("TT-2", 232524, 356134, classController.getAllClasses(), false);
 
         assertAll(
                 () -> assertEquals(SUCCESS, result1),
-                () -> assertEquals(SUCCESS, result2)
+                () -> assertEquals(FAILURE, result2)
         );
     }
 

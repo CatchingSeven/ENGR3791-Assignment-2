@@ -1,129 +1,165 @@
 package domain;
-import org.junit.jupiter.api.Tag;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 class TopicCodeTest {
     Topic topic = new Topic("COMP303", "Professional Skills");
-    @Test
+    @ParameterizedTest
+    @CsvSource({"COMP1702, COMP1256", "ENGR1267, COMP1267", "COMP0986, ENGR1289"})
     @DisplayName("Test get and set topic code")
+    @Order(1)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void testTopicCode() {
-        Topic topicTest = new Topic("COMP1702", "Fundamentals of Software Engineering");
 
-        assertEquals("COMP1702", topicTest.getTopicCode());
-        topicTest.setTopicCode("COMP1256");
+    void testTopicCode(String topicCode1, String topicCode2) {
+        Topic topicTest = new Topic(topicCode1, "Fundamentals of Software Engineering");
 
-        assertEquals("COMP1256", topicTest.getTopicCode());
+        assertAll(
+                () -> assertEquals(topicCode1, topicTest.getTopicCode()),
+                () -> topicTest.setTopicCode(topicCode2),
+                () -> assertEquals(topicCode2, topicTest.getTopicCode())
+        );
+
 
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"Fundamentals of Software Engineering, Computer Programming 2",
+            "UX Fundamentals, Computer Programming",
+            "Software Systems, Software Testing"})
     @DisplayName("Test get and set topic name")
+    @Order(2)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void testTopicName() {
-        Topic topicTest = new Topic("COMP1702", "Fundamentals of Software Engineering");
+    void testTopicName(String topicName1, String topicName2) {
+        Topic topicTest = new Topic("COMP1702", topicName1);
 
-        assertEquals("Fundamentals of Software Engineering", topicTest.getTopicName());
-        topicTest.setTopicName("Computer Programming 2");
+        assertEquals(topicName1, topicTest.getTopicName());
+        topicTest.setTopicName(topicName2);
 
-        assertEquals("Computer Programming 2", topicTest.getTopicName());
+        assertEquals(topicName2, topicTest.getTopicName());
 
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"COMP1702", "ENGR1287", "COMP9846"})
     @DisplayName("Test display name if topic name is blank")
+    @Order(3)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void displayNameBlankName() {
-        Topic topicTest = new Topic("COMP1702", "");
+    void displayNameBlankName(String topicCode) {
+        Topic topicTest = new Topic(topicCode, "");
 
-        assertEquals("COMP1702", topicTest.displayName());
+        assertEquals(topicCode, topicTest.displayName());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"Fundamentals of Software Engineering", "Computer Programming", "Software Testing"})
     @DisplayName("Test display name if topic code is blank")
+    @Order(4)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void displayBlankBlank() {
-        Topic topicTest = new Topic("", "Fundamentals of Software Engineering");
+    void displayBlankBlank(String topicName) {
+        Topic topicTest = new Topic("", topicName);
 
-        assertEquals("Fundamentals of Software Engineering", topicTest.displayName());
+        assertEquals(topicName, topicTest.displayName());
     }
 
-    @Test
-    @DisplayName("Test display name if name and code are filed")
+    @ParameterizedTest
+    @CsvSource({"COMP2623, Computer Programming",
+            "COMP1702, Fundamentals of Software Engineering",
+            "ENGR1278, Professional Standards"})
+    @DisplayName("Test display name if name and code are filled")
+    @Order(5)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void displayTestComplete() {
-        Topic topicTest = new Topic("COMP1702", "Fundamentals of Software Engineering");
+    void displayTestComplete(String topicCode, String topicName) {
+        Topic topicTest = new Topic(topicCode, topicName);
 
-        assertEquals("COMP1702 Fundamentals of Software Engineering", topicTest.displayName());
+        assertEquals(topicCode + " " + topicName, topicTest.displayName());
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"COMP2623, Computer Programming",
+            "COMP1702, Fundamentals of Software Engineering",
+            "ENGR1278, Professional Standards"})
     @DisplayName("Test that topic copies correctly")
+    @Order(6)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void copyTest() {
-        Topic original = new Topic("COMP1702", "Fundamentals of Software Engineering");
+    void copyTest(String topicCode, String topicName) {
+        Topic original = new Topic(topicCode, topicName);
         Topic copy = original.copy();
 
         assertEquals(original, copy);
     }
 
-    @Test
-    @DisplayName("Test toString")
+    @ParameterizedTest
+    @CsvSource({"COMP0880, Computer Programming 2",
+            "COMP1702, Software Testing",
+            "ENGR0972, Professional Standards"})
+    @DisplayName("Test the the topic is converted to a string correctly")
+    @Order(7)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void toStringTest() {
-        Topic topic = new Topic("COMP1702", "Fundamentals of Software Engineering");
+    void toStringTest(String topicCode, String topicName) {
+        Topic topic = new Topic(topicCode, topicName);
 
-        assertEquals("COMP1702 Fundamentals of Software Engineering", topic.toString());
+        assertEquals(topicCode + " " + topicName, topic.toString());
     }
-    @Test
-    @DisplayName("hashCode: 2 topics same with different case")
+    @ParameterizedTest
+    @CsvSource({"COMP1702, comp1702, Computer Programming, computer programming",
+            "ENGR7684, Engr7684, Fundamentals of Software Engineering, fundamentals of software engineering",
+            "comp1256, COmp1256, Software testing, Software Testing"})
+    @DisplayName("Test 2 topics same with different case in hascode function")
+    @Order(9)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
-    void testHasCodeSame() {
-        Topic topic1 = new Topic("COMP1702", "Fundamentals");
-        Topic topic2 = new Topic("comp1702", "fundamentals");
+    void testHasCodeSame(String topicCode1, String topicCode2, String topicName1, String topicName2) {
+        Topic topic1 = new Topic(topicCode1, topicName1);
+        Topic topic2 = new Topic(topicCode2, topicName2);
 
         assertEquals(topic1, topic2);
         assertEquals(topic1.hashCode(), topic2.hashCode());
     }
 
-    @Test
-    @DisplayName("hashCode: equals both same string test")
+    @ParameterizedTest
+    @CsvSource({"COMP1702, Computer Programming",
+            "ENGR1823,  Fundamentals of Software Engineering",
+            "comp1098, Software Testing"})
+    @DisplayName("Test hashcode when both strings are exactly equal")
+    @Order(10)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Core")
-    void testEqualsSame1() {
-        Topic topic1 = new Topic("COMP1702", "Fundamentals");
-        Topic topic2 = new Topic("COMP1702", "Fundamentals");
+    void testEqualsSame1(String topicCode, String topicName) {
+        Topic topic1 = new Topic(topicCode, topicName);
+        Topic topic2 = new Topic(topicCode, topicName);
 
         assertTrue(topic1.equals(topic2));
     }
 
-    @Test
-    @DisplayName("hashCode: Equals both same string different case test")
-    @Tag("Thomas")
-    @Tag("Critical")
-    void testEqualsCase() {
-        Topic topic1 = new Topic("COMP1702", "Fundamentals");
-        Topic topic2 = new Topic("comp1702", "fundamentals");
-
-        assertTrue(topic1.equals(topic2));
-    }
-
-    @Test
+    @ParameterizedTest
+    @CsvSource({"COMP1702, comp1702, Computer Programming, software Testing",
+            "ENGR7684, Engr7684, Fundamentals of Software Engineering, fundamentals of prgramming",
+            "comp1256, COmp1256, Software testing, Software systems"})
     @DisplayName("hashCode: Equals both different")
+    @Order(11)
+    @Tag("1.7.1")
     @Tag("Thomas")
     @Tag("Critical")
     void testEqualsFalse() {

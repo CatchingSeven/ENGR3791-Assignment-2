@@ -6,6 +6,8 @@ import persistence.PersistenceAdapter;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.*;
 import java.util.List;
 
@@ -15,15 +17,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClassControllerTest {
 
     private ClassController controller;
+    private String originalCsv;
+
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        originalCsv = Files.readString(Path.of("data/classes.csv"));
+
         controller = new ClassController(
                 new ImportService(), new SearchService(),
                 new ValidationService(), new PersistenceAdapter());
         controller.getAllClasses().add(make(1, "COMP1701", "Game Design",   "Tonsley",      "S2", "Workshop", "Monday"));
         controller.getAllClasses().add(make(2, "COMP1701", "Game Design",   "Tonsley",      "S2", "Tutorial", "Wednesday"));
         controller.getAllClasses().add(make(3, "COMP1702", "Programming",   "Bedford Park", "S1", "Lecture",  "Tuesday"));
+    }
+
+
+    @AfterEach
+    void tearDown() throws IOException {
+        Files.writeString(Path.of("data/classes.csv"), originalCsv);
     }
 
     private Schedule make(int id, String topicCode, String topicName, String campus,

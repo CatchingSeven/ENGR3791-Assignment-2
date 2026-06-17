@@ -7,12 +7,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 import java.util.Collections;
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TimetablePreferencesTest {
     TimetablePreferences preferenceDefault = new TimetablePreferences();
     @ParameterizedTest
     @CsvSource({"Tonsley, Morning, Monday", "Bedford Park, Afternoon, Wednesday", "Festival Plaza, Evening, Thursday"})
     @DisplayName("Test campus, time & day getters")
+    @Order(1)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -29,6 +30,7 @@ class TimetablePreferencesTest {
     @ParameterizedTest
     @CsvSource({"Tonsley, Morning, Monday", "Bedford Park, Afternoon, Wednesday", "Festival Plaza, Evening, Thursday"})
     @DisplayName("Test campus, time & day setters")
+    @Order(2)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -49,6 +51,7 @@ class TimetablePreferencesTest {
     @ParameterizedTest
     @ValueSource(strings = {"Timetable Test", "Timetable 1", "Bob's timetable"})
     @DisplayName("Test getTimetableName and setTimetableName")
+    @Order(3)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -61,6 +64,7 @@ class TimetablePreferencesTest {
     @ParameterizedTest
     @ValueSource(strings = {"Semester 2", "Semester 1", "Both"})
     @DisplayName("Test getSemseter and setSemester")
+    @Order(3)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -72,6 +76,7 @@ class TimetablePreferencesTest {
 
     @Test
     @DisplayName("1.6.7: Test isAllowLectureOverlap and setAllowLectureOverlap setters")
+    @Order(4)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -90,6 +95,7 @@ class TimetablePreferencesTest {
             "COMP3723, COMP1103, COMP3019, COMP1702",
             "ENGR1234, COMP1289, ENGR9087, COMP2067"})
     @DisplayName("Test selected topic codes setters and getters")
+    @Order(5)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -107,6 +113,7 @@ class TimetablePreferencesTest {
     @ParameterizedTest
     @CsvSource({"Tonsley, Bedford Park", "City, Sturt", "Bedford Park, Tonsley"})
     @DisplayName("Test selected campuses setters and getters")
+    @Order(6)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -124,6 +131,7 @@ class TimetablePreferencesTest {
 
     @Test
     @DisplayName("First test for ordered preferences setters and getters")
+    @Order(7)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
@@ -148,6 +156,7 @@ class TimetablePreferencesTest {
             "Bedford Park, Afternoon, Thursday, Timetable 2, Semester 2, false",
             "Tonsley, Morning, Monday, Timetable 3, Semester 1, true"})
     @DisplayName("Test copy function")
+    @Order(8)
     @Tag("1.6.7")
     @Tag("Thomas")
     @Tag("Critical")
